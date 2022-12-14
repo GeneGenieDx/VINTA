@@ -25,7 +25,7 @@ python bin/train_VINTA.py --data_dir data/training_data --out_dir results --devi
 
 ### Run trained VINTA model on data
 ```shell
-python predict.py --model_config_path results/params.json \
+python bin/predict.py --model_config_path results/params.json \
     --model_weight_path results/cv.1/VINTA.pt \
     --input_path  data/processed_test_data/pMTnet_validation.VINTA.txt \
     --out_dir results/model_prediction/ \
