@@ -1,22 +1,22 @@
 # VINTA
-VINTA -**V**isible **I**nteraction **N**etwork for **T**cr-**A**ntigen binding prediction
+VINTA -**V**isible **I**nteraction **N**etwork for **T**CR-**A**ntigen binding prediction
 
 ## Dependencies
-See in `requirements.txt`
+Check `requirements.txt`.
 
-## Folder structure
+## Folder Structure
 
-### bin
-Scripts to train and run the model
+### `bin/`
+Scripts to train and run the model.
 
-### network
-Model's implementation
+### `network/`
+Model's implementation.
 
-### data_utils
-Utility functions of data preprocessing
+### `data_utils/`
+Utility functions for data preprocessing.
 
 
-## Example usages
+## Example Usage
 
 ### Train a VINTA model
 ```shell
