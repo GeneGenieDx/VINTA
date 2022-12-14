@@ -7,7 +7,7 @@ See in `requirements.txt`
 ## Folder structure
 
 ### bin
-Script to train and run the model
+Scripts to train and run the model
 
 ### network
 Model's implementation
