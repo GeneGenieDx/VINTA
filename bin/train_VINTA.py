@@ -104,7 +104,12 @@ def parse_input(description: str) -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-
+    p.add_argument(
+        "--param_file",
+        required=False,
+        default="bin/param.json",
+        help="File specifying model parameters",
+    )
     p.add_argument(
         "--data_dir", required=True, help="The dir where the training data is stored"
     )
@@ -124,50 +129,10 @@ def main():
     args = parse_input("Train a VINTA")
     split = "peptide_split" if args.peptide_split else "random_split"  # Split method.
 
-    if split == "random_split":
-        # Parameters for random split.
-        params = {
-            "L1_weight": 0.0009,
-            "learning_rate": 6e-5,
-            "epochs": 300,
-            "batch_size": 128,
-            "aas_cnn_channels": [100, 200],
-            "categorical_layers_size": [20, 10],
-            "map_num": 5,
-            "clamp_value": None,
-            "kernel_size": 3,
-            "tcr_padding_length": 20,
-            "peptide_padding_length": 12,
-            "dropout_prob": 0,
-            "batch_norm": True,
-            "weight_decay": 0,
-            "n_shuffle_pair": 1,
-            "n_permute": 1,
-            "n_bg_tcr_pair": 1,
-            "n_bg_pep": 1,
-        }
-    else:
-        # Parameters for peptide split.
-        params = {
-            "L1_weight": 0.0008,
-            "learning_rate": 6e-5,
-            "epochs": 500,
-            "batch_size": 128,
-            "aas_cnn_channels": [100, 200],
-            "categorical_layers_size": [20, 10],
-            "map_num": 5,
-            "clamp_value": None,
-            "kernel_size": 3,
-            "tcr_padding_length": 20,
-            "peptide_padding_length": 12,
-            "dropout_prob": 0.2,
-            "batch_norm": True,
-            "weight_decay": 0,
-            "n_shuffle_pair": 1,
-            "n_permute": 0.5,
-            "n_bg_tcr_pair": 2,
-            "n_bg_pep": 0.5,
-        }
+    # Load parameters.
+    with open(args.param_file, "r") as f:
+        params = json.load(f).get(split)
+
     # Store the params
     with open(os.path.join(args.out_dir, "params.json"), "w") as f:
         json.dump(params, f)

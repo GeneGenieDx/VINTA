@@ -1,0 +1,42 @@
+{
+    "random_split": {
+        "L1_weight": 0.0009,
+        "learning_rate": 6e-5,
+        "epochs": 300,
+        "batch_size": 128,
+        "aas_cnn_channels": [100, 200],
+        "categorical_layers_size": [20, 10],
+        "map_num": 5,
+        "clamp_value": null,
+        "kernel_size": 3,
+        "tcr_padding_length": 20,
+        "peptide_padding_length": 12,
+        "dropout_prob": 0,
+        "batch_norm": true,
+        "weight_decay": 0,
+        "n_shuffle_pair": 1,
+        "n_permute": 1,
+        "n_bg_tcr_pair": 1,
+        "n_bg_pep": 1
+    },
+    "peptide_split": {
+        "L1_weight": 0.0008,
+        "learning_rate": 6e-5,
+        "epochs": 500,
+        "batch_size": 128,
+        "aas_cnn_channels": [100, 200],
+        "categorical_layers_size": [20, 10],
+        "map_num": 5,
+        "clamp_value": null,
+        "kernel_size": 3,
+        "tcr_padding_length": 20,
+        "peptide_padding_length": 12,
+        "dropout_prob": 0.2,
+        "batch_norm": true,
+        "weight_decay": 0,
+        "n_shuffle_pair": 1,
+        "n_permute": 0.5,
+        "n_bg_tcr_pair": 2,
+        "n_bg_pep": 0.5
+    }
+}
