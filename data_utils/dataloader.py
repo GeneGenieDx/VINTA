@@ -2,7 +2,7 @@
 ## Copyright: GeneGenieDx Corp 2021
 ## Author: Minzhe Zhang, whgu
 ## Date of creation: 11/24/2021
-## Date of revision: 06/12/2022
+## Date of revision: 12/16/2022
 #
 ## Neoantigen
 ## Description: DataLoader for TCR-Peptide binding prediction dataset.
@@ -99,9 +99,13 @@ class tcr_pep_dataloader(Sampler):
             # add labels
             if "label" not in data.columns:
                 self.samples["label"] = -1
+            else:
+                self.samples["label"] = self.samples["label"].astype(int)
             # add sample weight
             if "sample_weight" not in data.columns:
                 self.samples["sample_weight"] = 1
+            else:
+                self.samples["sample_weight"] = self.samples["sample_weight"].astype(float)
         else:
             raise ValueError("Provide either valid dataset or data")
 

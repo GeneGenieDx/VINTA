@@ -2,7 +2,7 @@
 # Copyright: GeneGenieDx Corp 2022
 # Author: Minzhe Zhang
 # Date of creation: 06/07/2022
-# Date last modified: 12/14/2022
+# Date last modified: 12/16/2022
 #
 ## Neoantigen
 ## Description: Predict TCR-peptide binding using VINTA model
@@ -11,10 +11,10 @@
 ## usage:
 #   python predict.py \
 #       --model_config_path results/params.json \
-#       --model_weight_path results/cv.1/VINTA.pt \
-#       --input_path  data/processed_test_data/pMTnet_validation.VINTA.txt \
+#       --model_weight_path results/VINTA.pt \
+#       --input_path  data/demo/random_split/test_set.tsv \
 #       --out_dir results/model_prediction/
-#       --name validation_pMTnet
+#       --name test_set
 ###############################################################
 #!/usr/bin/env python3
 import os

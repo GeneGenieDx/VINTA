@@ -3,7 +3,7 @@
 ## Copyright: GeneGenieDx Corp 2021
 ## Author: whgu
 ## Date of creation: 11/24/2021
-## Date of revision: 12/14/2022
+## Date of revision: 12/16/2022
 #
 ##
 ## Description: Train and test VINTA.
@@ -35,7 +35,7 @@ logging.basicConfig(
 
 
 def train_model(
-    train_loader, val_loader, test_loader, params, save_dir, device,
+    train_loader, val_loader, params, save_dir, device,
 ):
     """
     Train a VINTA model on the given dataloader.
@@ -43,7 +43,6 @@ def train_model(
     Params:
         - train_loader: Dataloader for training
         - val_loader: Dataloader for validation
-        - test_loader : DataLoader for test
         - params: Dict
                 Training parameters
         - save_dir: str
@@ -91,7 +90,6 @@ def train_model(
     best_auc = trainer.train(
         train_loader=train_loader,
         val_loader=val_loader,
-        test_loader=test_loader,
         epochs=params["epochs"],
     )
     return best_auc
@@ -137,94 +135,48 @@ def main():
     with open(os.path.join(args.out_dir, "params.json"), "w") as f:
         json.dump(params, f)
 
-    folds_auc = []  # The validation auc of each fold
-    for fold in ["cv.1", "cv.2", "cv.3", "cv.4", "cv.5"]:
-        # Load Dataset.
-        logging.info("Load training set......")
-        train_set = tcr_pep_dataset(
-            data_path=os.path.join(args.data_dir, "tcr-peptide." + split + ".txt"),
-            bg_alpha_path=os.path.join(args.data_dir, "tcr_alpha_bg_1.txt"),
-            bg_beta_path=os.path.join(args.data_dir, "tcr_beta_bg_1.txt"),
-            bg_pep_path=os.path.join(args.data_dir, "epitope_bg_1.txt"),
-            col_split=fold,
-            val_split="train",
-            n_shuffle_pair=params["n_shuffle_pair"],
-            n_bg_tcr_pair=params["n_bg_tcr_pair"],
-            n_permute=params["n_permute"],
-            n_bg_pep=params["n_bg_pep"],
-            mutate_in_permute=False,
-            increase_neg_weight=True if split == "peptide_split" else False,
-        )
-        train_loader = tcr_pep_dataloader(
-            dataset=train_set,
-            mode="dynamic",
-            batch_size=params["batch_size"],
-            device=args.device,
-            shuffle=True,
-            embedding="blosum",
-            tcr_padding_length=params["tcr_padding_length"],
-            peptide_padding_length=params["peptide_padding_length"],
-        )
-        logging.info("Load validation set......")
-        val_set = tcr_pep_dataset(
-            data_path=os.path.join(args.data_dir, "tcr-peptide." + split + ".txt"),
-            bg_alpha_path=os.path.join(args.data_dir, "tcr_alpha_bg_2.txt"),
-            bg_beta_path=os.path.join(args.data_dir, "tcr_beta_bg_2.txt"),
-            bg_pep_path=os.path.join(args.data_dir, "epitope_bg_2.txt"),
-            col_split=fold,
-            val_split="val",
-            n_shuffle_pair=1,
-            n_bg_tcr_pair=1,
-            n_permute=1,
-            n_bg_pep=1,
-            mutate_in_permute=True,
-        )
-        val_loader = tcr_pep_dataloader(
-            dataset=val_set,
-            mode="static",
-            batch_size=params["batch_size"],
-            device=args.device,
-            shuffle=False,
-            embedding="blosum",
-            tcr_padding_length=params["tcr_padding_length"],
-            peptide_padding_length=params["peptide_padding_length"],
-        )
-        logging.info("Load test set......")
-        test_set = tcr_pep_dataset(
-            data_path=os.path.join(args.data_dir, "tcr-peptide." + split + ".txt"),
-            bg_alpha_path=os.path.join(args.data_dir, "tcr_alpha_bg_2.txt"),
-            bg_beta_path=os.path.join(args.data_dir, "tcr_beta_bg_2.txt"),
-            bg_pep_path=os.path.join(args.data_dir, "epitope_bg_2.txt"),
-            col_split=fold,
-            val_split="test",
-            n_shuffle_pair=1,
-            n_bg_tcr_pair=1,
-            n_permute=1,
-            n_bg_pep=1,
-            mutate_in_permute=True,
-        )
-        test_loader = tcr_pep_dataloader(
-            dataset=test_set,
-            mode="static",
-            batch_size=params["batch_size"],
-            device=args.device,
-            shuffle=False,
-            embedding="blosum",
-            tcr_padding_length=params["tcr_padding_length"],
-            peptide_padding_length=params["peptide_padding_length"],
-        )
-        best_auc = train_model(
-            train_loader=train_loader,
-            val_loader=val_loader,
-            test_loader=test_loader,
-            params=params,
-            save_dir=os.path.join(args.out_dir, fold),
-            device=args.device,
-        )
-        folds_auc.append(best_auc)
+    # Load training set.
+    logging.info("Load training set......")
+    train_set = pd.read_csv(
+        os.path.join(args.data_dir, split, "train_set.tsv"), sep="\t", dtype=str
+    ).fillna("")
+    train_loader = tcr_pep_dataloader(
+        data=train_set,
+        mode="static",
+        batch_size=params["batch_size"],
+        device=args.device,
+        shuffle=True,
+        embedding="blosum",
+        tcr_padding_length=params["tcr_padding_length"],
+        peptide_padding_length=params["peptide_padding_length"],
+    )
 
-    print("Average auc of five folds:", np.mean(folds_auc))
-    print("Strand deviation of five folds' auc", np.std(folds_auc))
+    # Load validation set.
+    logging.info("Load validation set......")
+    val_set = pd.read_csv(
+        os.path.join(args.data_dir, split, "val_set.tsv"), sep="\t", dtype=str
+    ).fillna("")
+    val_loader = tcr_pep_dataloader(
+        data=val_set,
+        mode="static",
+        batch_size=params["batch_size"],
+        device=args.device,
+        shuffle=True,
+        embedding="blosum",
+        tcr_padding_length=params["tcr_padding_length"],
+        peptide_padding_length=params["peptide_padding_length"],
+    )
+
+    # Train a VINTA.
+    best_auc = train_model(
+        train_loader=train_loader,
+        val_loader=val_loader,
+        params=params,
+        save_dir=args.out_dir,
+        device=args.device,
+    )
+
+    print("Best auc on validation set:", best_auc)
 
 
 if __name__ == "__main__":

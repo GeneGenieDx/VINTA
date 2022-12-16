@@ -2,7 +2,7 @@
 ## Copyright: GeneGenieDx Corp 2021
 ## Author: whgu
 ## Date of creation: 11/24/2021
-## Date of revision: 12/12/2022
+## Date of revision: 12/16/2022
 #
 ##
 ## Description: Class to handle training model.
@@ -61,7 +61,7 @@ class Trainer:
         self.logger.info("Training Device: {}".format(self.device))
 
     def train(
-        self, train_loader, val_loader, test_loader, epochs=100,
+        self, train_loader, val_loader, epochs=100,
     ):
         """
         Trains the model.
@@ -69,7 +69,6 @@ class Trainer:
         Params:
             - train_loader : DataLoader for training
             - val_loader : DataLoader for validation
-            - test_loader : DataLoader for test
             - epochs : int, optional
                     Number of epochs to train the model for.
 
@@ -92,18 +91,16 @@ class Trainer:
             ) = self._train_epoch(train_loader, epoch)
             # Get metric on validation data.
             (val_loss, val_auc, val_ap,) = self._validate_epoch(val_loader)
-            # Get metric on test data.
-            (test_loss, test_auc, test_ap,) = self._validate_epoch(test_loader)
 
             self.logger.info(
-                "Epoch: {} Train loss : {:.6f}, Train_cls_loss : {:.6f}, Train L1_loss : {:.6f}, Train_auc: {:.6f}, Test_loss : {:.6f}, Test_auc : {:.6f}".format(
+                "Epoch: {} Train loss : {:.6f}, Train_cls_loss : {:.6f}, Train L1_loss : {:.6f}, Train_auc: {:.6f}, Val_loss : {:.6f}, Val_auc : {:.6f}".format(
                     epoch + 1,
                     train_loss,
                     train_cls_loss,
                     train_L1_loss,
                     train_auc,
-                    test_loss,
-                    test_auc,
+                    val_loss,
+                    val_auc,
                 )
             )
             self.logger.info("-" * 100)
@@ -118,9 +115,6 @@ class Trainer:
                 val_loss,
                 val_auc,
                 val_ap,
-                test_loss,
-                test_auc,
-                test_ap,
             )
             if val_auc > best_auc:
                 best_auc = val_auc
@@ -312,9 +306,6 @@ class LossesLogger(object):
                 "Val_loss",
                 "Val_auc",
                 "Val_ap",
-                "Test_loss",
-                "Test_auc",
-                "Test_ap",
             ]
         )
         self.logger.debug(header)

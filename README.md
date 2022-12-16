@@ -20,16 +20,16 @@ Utility functions for data preprocessing.
 
 ### Train a VINTA model
 ```shell
-python bin/train_VINTA.py --data_dir data/training_data --out_dir results --device cuda:0
+python bin/train_VINTA.py --data_dir data/demo --out_dir results --device cuda:0
 ```
 
 ### Run trained VINTA model on data
 ```shell
 python bin/predict.py --model_config_path results/params.json \
-    --model_weight_path results/cv.1/VINTA.pt \
-    --input_path  data/processed_test_data/pMTnet_validation.VINTA.txt \
+    --model_weight_path results/VINTA.pt \
+    --input_path  data/demo/random_split/test_set.tsv \
     --out_dir results/model_prediction/ \
-    --name validation_pMTnet
+    --name test_set
 ```
 
 
